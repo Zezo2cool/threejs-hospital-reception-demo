@@ -1,0 +1,11 @@
+Model Information:
+* title:	Hospital Reception Environment
+* source:	https://sketchfab.com/3d-models/hospital-reception-environment-3d5b0ae00f9b4e2dad266fa0cd4748cb
+* author:	CaseyPozzobon (https://sketchfab.com/CaseyPozzobon)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Hospital Reception Environment" (https://sketchfab.com/3d-models/hospital-reception-environment-3d5b0ae00f9b4e2dad266fa0cd4748cb) by CaseyPozzobon (https://sketchfab.com/CaseyPozzobon) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
