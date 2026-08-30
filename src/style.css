@@ -1,14 +1,78 @@
-/* Page and interface styles will live here. */
-
 html,
 body,
 #app {
   width: 100%;
   height: 100%;
-  margin: 0%;
+}
+
+body {
+  margin: 0;
   overflow: hidden;
+  font-family:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 canvas {
   display: block;
+}
+
+.info-panel {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  width: min(360px, calc(100% - 2rem));
+  padding: 1.25rem 2.75rem 1.25rem 1.25rem;
+  box-sizing: border-box;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #202020;
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.25);
+}
+
+.info-panel[hidden] {
+  display: none;
+}
+
+.info-panel h2 {
+  margin: 0 0 0.75rem;
+}
+
+.info-panel p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+#info-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#info-close:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+#info-close:focus-visible {
+  outline: 2px solid #1264a3;
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .info-panel {
+    right: 1rem;
+    left: 1rem;
+    width: auto;
+  }
 }

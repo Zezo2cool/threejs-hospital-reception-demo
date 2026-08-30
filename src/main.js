@@ -1,8 +1,6 @@
-// Three.js application entry point. We will build this one feature at a time.
-
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/Addons.js";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const w = window.innerWidth;
 const h = window.innerHeight;
@@ -50,8 +48,8 @@ loader.load(
 
     scene.add(model);
 
-    camera.position.set(8, 5, 8);
-    controls.target.set(0, 0.5, 0);
+    camera.position.set(0, 2, -3); // where the camera sits
+    controls.target.set(0, 0.5, 0); // where the camera should point
     controls.update();
   },
   undefined,
@@ -62,6 +60,62 @@ loader.load(
 
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff);
 scene.add(hemiLight);
+
+/* ------------ Hotspots ------------- */
+const hotspots = [];
+
+const hotspotGeometry = new THREE.SphereGeometry(0.12, 16, 16); // radius, width segment, height segment
+const hotspotMaterial = new THREE.MeshBasicMaterial({
+  color: 0xff3b28,
+});
+
+const receptionHotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
+receptionHotspot.position.set(-0.15, 1.25, 0);
+receptionHotspot.userData = {
+  // userData is an empty object in every Three.js Object3D that
+  title: "Reception Desk", // can be filled with application-specific metadata
+  description: "This is where patients and visitors can check in.",
+};
+scene.add(receptionHotspot);
+hotspots.push(receptionHotspot);
+
+/* --------- Raycaster ---------- */
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
+/* ---------- Hotspot Information Panel ------------- */
+const infoPanel = document.querySelector("#info-panel");
+const infoTitle = document.querySelector("#info-title");
+const infoDescription = document.querySelector("#info-description");
+const infoClose = document.querySelector("#info-close");
+
+infoClose.addEventListener("click", () => {
+  infoPanel.hidden = true;
+});
+
+function handleCanvasClick(event) {
+  const canvas = renderer.domElement;
+  const rect = canvas.getBoundingClientRect();
+
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(pointer, camera);
+
+  const intersections = raycaster.intersectObjects(hotspots, false);
+
+  if (intersections.length > 0) {
+    const clickedHotspot = intersections[0].object;
+
+    console.log("Intersected object: ", clickedHotspot.userData);
+    const { title, description } = clickedHotspot.userData;
+    infoTitle.textContent = title;
+    infoDescription.textContent = description;
+    infoPanel.hidden = false;
+  }
+}
+
+renderer.domElement.addEventListener("click", handleCanvasClick);
 
 function animate(t = 0) {
   requestAnimationFrame(animate);
