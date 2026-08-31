@@ -33,7 +33,7 @@ loader.load(
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
 
-    // Scale the largest dimenstion to around 8 scene units
+    // Scale the largest dimenstion to 8 scene units
     const maxDim = Math.max(size.x, size.y, size.z);
     const scale = 8 / maxDim;
     model.scale.setScalar(scale);
@@ -48,7 +48,7 @@ loader.load(
 
     scene.add(model);
 
-    camera.position.set(0, 2, -3); // where the camera sits
+    camera.position.set(2.5, 3, -3.5); // where the camera sits
     controls.target.set(0, 0.5, 0); // where the camera should point
     controls.update();
   },
@@ -69,8 +69,9 @@ const hotspotMaterial = new THREE.MeshBasicMaterial({
   color: 0xff3b28,
 });
 
+// RECEPTION
 const receptionHotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
-receptionHotspot.position.set(-0.15, 1.25, 0);
+receptionHotspot.position.set(0, 0.75, 0);
 receptionHotspot.userData = {
   // userData is an empty object in every Three.js Object3D that
   title: "Reception Desk", // can be filled with application-specific metadata
@@ -78,6 +79,41 @@ receptionHotspot.userData = {
 };
 scene.add(receptionHotspot);
 hotspots.push(receptionHotspot);
+
+// WAITING AREA
+const waitAreaHotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
+waitAreaHotspot.position.set(0, 0.5, -2.25);
+waitAreaHotspot.userData = {
+  // userData is an empty object in every Three.js Object3D that
+  title: "Waiting Area", // can be filled with application-specific metadata
+  description: "This is where patients and visitors can sit down and wait.",
+};
+scene.add(waitAreaHotspot);
+hotspots.push(waitAreaHotspot);
+
+// ICU
+const icuHotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
+icuHotspot.position.set(3.3, 1, 3);
+icuHotspot.userData = {
+  // userData is an empty object in every Three.js Object3D that
+  title: "Intensive Care and Emergency Department", // can be filled with application-specific metadata
+  description:
+    "This door leads to intensive care units and the emergency departments. Patients are taken there in case of emergencies.",
+};
+scene.add(icuHotspot);
+hotspots.push(icuHotspot);
+
+// MATERNITY WARD
+const maternityWardHotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
+maternityWardHotspot.position.set(-3.3, 1, 3);
+maternityWardHotspot.userData = {
+  // userData is an empty object in every Three.js Object3D that
+  title: "Maternity Ward", // can be filled with application-specific metadata
+  description:
+    "This door leads to the maternity ward, where patients are provided antenatal care, postnatal care, neonatal support, and labor and delivery.",
+};
+scene.add(maternityWardHotspot);
+hotspots.push(maternityWardHotspot);
 
 /* --------- Raycaster ---------- */
 const raycaster = new THREE.Raycaster();
