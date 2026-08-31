@@ -6,6 +6,7 @@ const w = window.innerWidth;
 const h = window.innerHeight;
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(w, h);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 const app = document.querySelector("#app");
 app.appendChild(renderer.domElement);
 const aspect = w / h;
@@ -22,10 +23,13 @@ const scene = new THREE.Scene();
 
 const loader = new GLTFLoader();
 
+const loadingScreen = document.querySelector("#loading-screen");
+const loadingMessage = document.querySelector("#loading-message");
 loader.load(
   "/models/hospital_reception_environment/scene.gltf",
   (gltf) => {
     const model = gltf.scene;
+    loadingScreen.hidden = true;
 
     // Measure model at original size
     const box = new THREE.Box3().setFromObject(model);
@@ -46,15 +50,23 @@ loader.load(
 
     scene.add(model);
 
-    camera.position.set(2.5, 3, -3.5); // where the camera sits
+    camera.position.set(0, 3, -6); // where the camera sits
     controls.target.set(0, 0.5, 0); // where the camera should point
     controls.update();
   },
   undefined,
   (error) => {
     console.error("Failed to load hospital model:", error);
+    loadingMessage.textContent =
+      "The model could not be loaded. Please refresh the page.";
   },
 );
+
+const cameraReset = document.querySelector("#camera-reset");
+cameraReset.addEventListener("click", () => {
+  camera.position.set(0, 3, -6); // where the camera sits
+  controls.target.set(0, 0.5, 0); // where the camera should point
+});
 
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff);
 scene.add(hemiLight);
@@ -230,4 +242,3 @@ function handleResize() {
 
 animate();
 window.addEventListener("resize", handleResize);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));

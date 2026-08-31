@@ -9,11 +9,66 @@ body {
   margin: 0;
   overflow: hidden;
   font-family:
-    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 canvas {
   display: block;
+}
+
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  background: #e9f0f4;
+  color: #183446;
+}
+
+#loading-screen[hidden] {
+  display: none;
+}
+
+.camera-reset {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 10;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(43, 92, 147, 0.92);
+  color: white;
+  font: inherit;
+  cursor: pointer;
+  /* box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.25); */
+  transition:
+    background-color 100ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.camera-reset:hover {
+  background: #0e5083;
+  /* transform: translateY(-2px); */
+  /* box-shadow: 0 0.4rem 1.25rem rgba(0, 0, 0, 0.3); */
+}
+
+.camera-reset:active {
+  background: #09395e;
+
+  transform: scale(1);
+}
+
+.camera-reset:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 3px;
 }
 
 .info-panel {
