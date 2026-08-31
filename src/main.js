@@ -25,8 +25,6 @@ const loader = new GLTFLoader();
 loader.load(
   "/models/hospital_reception_environment/scene.gltf",
   (gltf) => {
-    console.log("Hospital model loaded", gltf.scene);
-
     const model = gltf.scene;
 
     // Measure model at original size
@@ -69,51 +67,70 @@ const hotspotMaterial = new THREE.MeshBasicMaterial({
   color: 0xff3b28,
 });
 
-// RECEPTION
-const receptionHotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
-receptionHotspot.position.set(0, 0.75, 0);
-receptionHotspot.userData = {
-  // userData is an empty object in every Three.js Object3D that
-  title: "Reception Desk", // can be filled with application-specific metadata
-  description: "This is where patients and visitors can check in.",
+const hotspotStyles = {
+  default: {
+    color: 0xff3b28,
+    scale: 1,
+  },
+  hover: {
+    color: 0xffb000,
+    scale: 1.2,
+  },
+  selected: {
+    color: 0x168aad,
+    scale: 1.2,
+  },
 };
-scene.add(receptionHotspot);
-hotspots.push(receptionHotspot);
 
-// WAITING AREA
-const waitAreaHotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
-waitAreaHotspot.position.set(0, 0.5, -2.25);
-waitAreaHotspot.userData = {
-  // userData is an empty object in every Three.js Object3D that
-  title: "Waiting Area", // can be filled with application-specific metadata
-  description: "This is where patients and visitors can sit down and wait.",
-};
-scene.add(waitAreaHotspot);
-hotspots.push(waitAreaHotspot);
+function setHotspotStyle(hotspot, state) {
+  const style = hotspotStyles[state];
 
-// ICU
-const icuHotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
-icuHotspot.position.set(3.3, 1, 3);
-icuHotspot.userData = {
-  // userData is an empty object in every Three.js Object3D that
-  title: "Intensive Care and Emergency Department", // can be filled with application-specific metadata
-  description:
-    "This door leads to intensive care units and the emergency departments. Patients are taken there in case of emergencies.",
-};
-scene.add(icuHotspot);
-hotspots.push(icuHotspot);
+  hotspot.material.color.setHex(style.color);
+  hotspot.scale.setScalar(style.scale);
+}
+
+function createHotspot({ position, title, description }) {
+  const hotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial.clone());
+  hotspot.position.set(...position);
+  hotspot.userData = {
+    title,
+    description,
+  };
+  scene.add(hotspot);
+  hotspots.push(hotspot);
+
+  return hotspot;
+}
 
 // MATERNITY WARD
-const maternityWardHotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
-maternityWardHotspot.position.set(-3.3, 1, 3);
-maternityWardHotspot.userData = {
-  // userData is an empty object in every Three.js Object3D that
-  title: "Maternity Ward", // can be filled with application-specific metadata
+createHotspot({
+  position: [-3.3, 1, 3],
+  title: "Maternity Ward",
   description:
     "This door leads to the maternity ward, where patients are provided antenatal care, postnatal care, neonatal support, and labor and delivery.",
-};
-scene.add(maternityWardHotspot);
-hotspots.push(maternityWardHotspot);
+});
+
+// ICU
+createHotspot({
+  position: [3.3, 1, 3],
+  title: "Intensive Care and Emergency Department",
+  description:
+    "This door leads to intensive care units and the emergency departments. Patients are taken there in case of emergencies.",
+});
+
+// WAITING AREA
+createHotspot({
+  position: [0, 0.5, -2.25],
+  title: "Waiting Area",
+  description: "This is where patients and visitors can sit down and wait.",
+});
+
+// RECEPTION
+createHotspot({
+  position: [0, 0.75, 0],
+  title: "Reception Desk",
+  description: "This is where patients and visitors can check in.",
+});
 
 /* --------- Raycaster ---------- */
 const raycaster = new THREE.Raycaster();
@@ -125,11 +142,7 @@ const infoTitle = document.querySelector("#info-title");
 const infoDescription = document.querySelector("#info-description");
 const infoClose = document.querySelector("#info-close");
 
-infoClose.addEventListener("click", () => {
-  infoPanel.hidden = true;
-});
-
-function handleCanvasClick(event) {
+function getHotspotAtPointer(event) {
   const canvas = renderer.domElement;
   const rect = canvas.getBoundingClientRect();
 
@@ -140,20 +153,66 @@ function handleCanvasClick(event) {
 
   const intersections = raycaster.intersectObjects(hotspots, false);
 
-  if (intersections.length > 0) {
-    const clickedHotspot = intersections[0].object;
+  return intersections[0]?.object ?? null;
+}
 
-    console.log("Intersected object: ", clickedHotspot.userData);
-    const { title, description } = clickedHotspot.userData;
-    infoTitle.textContent = title;
-    infoDescription.textContent = description;
-    infoPanel.hidden = false;
+let hoveredHotspot = null;
+let selectedHotspot = null;
+
+function handlePointerMove(event) {
+  const nextHoveredHotspot = getHotspotAtPointer(event);
+
+  if (nextHoveredHotspot === hoveredHotspot) {
+    return;
   }
+
+  if (hoveredHotspot && hoveredHotspot !== selectedHotspot) {
+    setHotspotStyle(hoveredHotspot, "default");
+  }
+
+  hoveredHotspot = nextHoveredHotspot;
+
+  if (hoveredHotspot && hoveredHotspot !== selectedHotspot) {
+    setHotspotStyle(hoveredHotspot, "hover");
+  }
+
+  renderer.domElement.style.cursor = hoveredHotspot ? "pointer" : "grab";
+}
+
+renderer.domElement.addEventListener("pointermove", handlePointerMove);
+
+function handleCanvasClick(event) {
+  const clickedHotspot = getHotspotAtPointer(event);
+
+  if (!clickedHotspot) {
+    return;
+  }
+
+  if (selectedHotspot && selectedHotspot !== clickedHotspot) {
+    setHotspotStyle(selectedHotspot, "default");
+  }
+
+  selectedHotspot = clickedHotspot;
+  setHotspotStyle(selectedHotspot, "selected");
+
+  const { title, description } = clickedHotspot.userData;
+  infoTitle.textContent = title;
+  infoDescription.textContent = description;
+  infoPanel.hidden = false;
 }
 
 renderer.domElement.addEventListener("click", handleCanvasClick);
 
-function animate(t = 0) {
+infoClose.addEventListener("click", () => {
+  infoPanel.hidden = true;
+
+  if (selectedHotspot) {
+    setHotspotStyle(selectedHotspot, "default");
+    selectedHotspot = null;
+  }
+});
+
+function animate() {
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
@@ -171,3 +230,4 @@ function handleResize() {
 
 animate();
 window.addEventListener("resize", handleResize);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
