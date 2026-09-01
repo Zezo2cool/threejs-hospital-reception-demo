@@ -68,8 +68,29 @@ cameraReset.addEventListener("click", () => {
   controls.target.set(0, 0.5, 0); // where the camera should point
 });
 
-const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff);
+const helpButton = document.querySelector("#help-open");
+const helpDialog = document.querySelector("#help-dialog");
+
+helpButton.addEventListener("click", () => {
+  helpDialog.showModal();
+});
+
+helpDialog.addEventListener("close", () => {
+  helpButton.focus();
+});
+
+/* ---------------- Scene Lighting ---------------- */
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1;
+scene.background = new THREE.Color(0x0e1c33);
+const hemiLight = new THREE.HemisphereLight(0xdbeeff, 0x4d4842, 1.2);
 scene.add(hemiLight);
+const keyLight = new THREE.DirectionalLight(0xffffff, 2);
+keyLight.position.set(-4, 6, -4);
+keyLight.target.position.set(0, 0.5, 0);
+
+scene.add(keyLight);
+scene.add(keyLight.target);
 
 /* ------------ Hotspots ------------- */
 const hotspotHitboxes = [];

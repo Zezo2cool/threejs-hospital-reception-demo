@@ -14,6 +14,50 @@
       <p id="loading-message">The model is loading. Please wait...</p>
     </div>
 
+    <button
+      id="help-open"
+      class="help-button"
+      type="button"
+      aria-label="Open help"
+      aria-haspopup="dialog"
+    >
+      ?
+    </button>
+
+    <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title">
+      <form method="dialog">
+        <button class="help-close" type="submit" aria-label="Close help">
+          ×
+        </button>
+
+        <h2 id="help-title">How to explore</h2>
+
+        <section>
+          <h3>Desktop</h3>
+          <ul>
+            <li>Drag to rotate the view.</li>
+            <li>Scroll to zoom.</li>
+            <li>Right-drag to pan.</li>
+            <li>Click a colored marker to view information.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Touch</h3>
+          <ul>
+            <li>Drag with one finger to rotate.</li>
+            <li>Pinch to zoom.</li>
+            <li>Drag with two fingers to pan.</li>
+            <li>Tap a marker to view information.</li>
+          </ul>
+        </section>
+
+        <p>
+          Use <strong>Reset view</strong> to return to the starting position.
+        </p>
+      </form>
+    </dialog>
+
     <button id="camera-reset" class="camera-reset" type="button">
       Reset view
     </button>
