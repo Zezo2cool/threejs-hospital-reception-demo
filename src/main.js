@@ -29,7 +29,6 @@ loader.load(
   "/models/hospital_reception_environment/scene.gltf",
   (gltf) => {
     const model = gltf.scene;
-    loadingScreen.hidden = true;
 
     // Measure model at original size
     const box = new THREE.Box3().setFromObject(model);
@@ -53,6 +52,7 @@ loader.load(
     camera.position.set(0, 3, -6); // where the camera sits
     controls.target.set(0, 0.5, 0); // where the camera should point
     controls.update();
+    loadingScreen.hidden = true;
   },
   undefined,
   (error) => {
@@ -209,7 +209,7 @@ let selectedHotspot = null;
 function handlePointerMove(event) {
   const nextHoveredHotspot = getHotspotAtPointer(event);
 
-  renderer.domElement.style.cursor = hoveredHotspot ? "pointer" : "grab";
+  renderer.domElement.style.cursor = nextHoveredHotspot ? "pointer" : "grab";
   if (nextHoveredHotspot === hoveredHotspot) {
     return;
   }
@@ -224,7 +224,6 @@ function handlePointerMove(event) {
     setHotspotStyle(hoveredHotspot, "hover");
   }
 }
-
 renderer.domElement.addEventListener("pointermove", handlePointerMove);
 
 function handleCanvasClick(event) {
@@ -246,8 +245,17 @@ function handleCanvasClick(event) {
   infoDescription.textContent = description;
   infoPanel.hidden = false;
 }
-
 renderer.domElement.addEventListener("click", handleCanvasClick);
+
+function handlePointerLeave() {
+  if (hoveredHotspot && hoveredHotspot !== selectedHotspot) {
+    setHotspotStyle(hoveredHotspot, "default");
+  }
+
+  hoveredHotspot = null;
+  renderer.domElement.style.cursor = "grab";
+}
+renderer.domElement.addEventListener("pointerleave", handlePointerLeave);
 
 infoClose.addEventListener("click", () => {
   infoPanel.hidden = true;
