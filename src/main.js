@@ -72,11 +72,19 @@ const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff);
 scene.add(hemiLight);
 
 /* ------------ Hotspots ------------- */
-const hotspots = [];
+const hotspotHitboxes = [];
 
 const hotspotGeometry = new THREE.SphereGeometry(0.12, 16, 16); // radius, width segment, height segment
 const hotspotMaterial = new THREE.MeshBasicMaterial({
   color: 0xff3b28,
+});
+
+const hotspotHitGeometry = new THREE.SphereGeometry(0.2, 12, 12);
+const hotspotHitMaterial = new THREE.MeshBasicMaterial({
+  transparent: true,
+  opacity: 0,
+  depthWrite: false,
+  colorWrite: false,
 });
 
 const hotspotStyles = {
@@ -108,8 +116,14 @@ function createHotspot({ position, title, description }) {
     title,
     description,
   };
+
+  const hitbox = new THREE.Mesh(hotspotHitGeometry, hotspotHitMaterial);
+  hitbox.position.copy(hotspot.position);
+  hitbox.userData.hotspot = hotspot;
+
   scene.add(hotspot);
-  hotspots.push(hotspot);
+  scene.add(hitbox);
+  hotspotHitboxes.push(hitbox);
 
   return hotspot;
 }
@@ -163,9 +177,9 @@ function getHotspotAtPointer(event) {
 
   raycaster.setFromCamera(pointer, camera);
 
-  const intersections = raycaster.intersectObjects(hotspots, false);
+  const intersections = raycaster.intersectObjects(hotspotHitboxes, false);
 
-  return intersections[0]?.object ?? null;
+  return intersections[0]?.object.userData.hotspot ?? null;
 }
 
 let hoveredHotspot = null;
@@ -174,6 +188,7 @@ let selectedHotspot = null;
 function handlePointerMove(event) {
   const nextHoveredHotspot = getHotspotAtPointer(event);
 
+  renderer.domElement.style.cursor = hoveredHotspot ? "pointer" : "grab";
   if (nextHoveredHotspot === hoveredHotspot) {
     return;
   }
@@ -187,8 +202,6 @@ function handlePointerMove(event) {
   if (hoveredHotspot && hoveredHotspot !== selectedHotspot) {
     setHotspotStyle(hoveredHotspot, "hover");
   }
-
-  renderer.domElement.style.cursor = hoveredHotspot ? "pointer" : "grab";
 }
 
 renderer.domElement.addEventListener("pointermove", handlePointerMove);
