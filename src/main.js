@@ -55,6 +55,7 @@ loader.load(
     controls.target.set(0, 0.5, 0); // where the camera should point
     controls.update();
     loadingScreen.hidden = true;
+    helpDialog.showModal();
   },
   undefined,
   (error) => {
