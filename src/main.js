@@ -25,8 +25,10 @@ const loader = new GLTFLoader();
 
 const loadingScreen = document.querySelector("#loading-screen");
 const loadingMessage = document.querySelector("#loading-message");
+
+const modelUrl = `${import.meta.env.BASE_URL}models/hospital_reception_environment/scene.gltf`;
 loader.load(
-  "/models/hospital_reception_environment/scene.gltf",
+  modelUrl,
   (gltf) => {
     const model = gltf.scene;
 
